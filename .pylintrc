@@ -1,0 +1,24 @@
+[MASTER]
+ignore=venv
+jobs=1
+persistent=yes
+
+
+[MESSAGES CONTROL]
+disable =
+    missing-docstring,
+    unused-import,
+    unused-argument,
+    too-few-public-methods,
+    too-many-arguments,
+    too-many-locals,
+    
+[FORMAT]
+max-line-length=120
+
+[DESIGN]
+max-args=6
+max-locals=15
+
+[REPORTS]
+output-format = colorized
