@@ -6,7 +6,12 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.database.models import Base
 
 
-engine = create_async_engine(os.getenv("DB_URL"), echo=True, pool_pre_ping=True)
+if os.getenv("TESTING"):
+    DATABASE_URL = "sqlite+aiosqlite:///:memory:"
+else:
+    DATABASE_URL = os.getenv("DB_URL")
+
+engine = create_async_engine(DATABASE_URL, echo=True, pool_pre_ping=True)
 
 session_maker = async_sessionmaker(
     bind=engine,
