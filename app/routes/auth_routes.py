@@ -1,28 +1,21 @@
-from jose import jwt, JWTError
-from fastapi import FastAPI, Depends, HTTPException, status
+from datetime import timedelta
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-import models
-from engine import get_db, create_db, close_engine
-import schemas
-from auth import (
+from app.database import models
+from app import schemas
+from app.core.security import (
     verify_password,
     get_password_hash,
     create_access_token,
-    SECRET_KEY,
-    ALGORITHM,
+    ACCESS_TOKEN_EXPIRE_MINUTES,
 )
+from app.database.db import get_db
+from app.dependencies import get_current_user
 
 
-async def lifespan(app: FastAPI):
-    # pylint: disable= redefined-outer-name
-    await create_db()
-    yield
-    await close_engine()
-
-
-app = FastAPI(title="authorization service", lifespan=lifespan)
+router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 async def get_user_by_username(db: AsyncSession, username: str):
@@ -37,7 +30,7 @@ async def get_user_by_email(db: AsyncSession, email: str):
     return result.scalar_one_or_none()
 
 
-@app.post("/register", response_model=schemas.UserResponse)
+@router.post("/register", response_model=schemas.Token)
 async def register(user_data: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
     db_user = await get_user_by_username(db, user_data.username)
     db_email = await get_user_by_email(db, user_data.email)
@@ -56,41 +49,31 @@ async def register(user_data: schemas.UserCreate, db: AsyncSession = Depends(get
     await db.flush()
     await db.refresh(new_user)
 
-    return new_user
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": new_user.email}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.post("/login", response_model=schemas.Token)
+@router.post("/login", response_model=schemas.Token)
 async def login(user_data: schemas.UserLogin, db: AsyncSession = Depends(get_db)):
     user = await get_user_by_email(db, user_data.email)
-    if not user:
+    if not user or not verify_password(user_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
-    if not verify_password(user_data.password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-        )
-
-    access_token = create_access_token(data={"sub": user.email})
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.email}, expires_delta=access_token_expires
+    )
 
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.get("/me", response_model=schemas.UserResponse)
-async def read_users_me(token: str, db: AsyncSession = Depends(get_db)):
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
-    except JWTError as e:
-        raise HTTPException(status_code=401, detail="Invalid token") from e
-
-    user = await get_user_by_email(db, email)
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    return user
+@router.get("/me", response_model=schemas.UserResponse)
+async def read_users_me(current_user: models.User = Depends(get_current_user)):
+    return current_user
