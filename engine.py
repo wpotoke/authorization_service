@@ -1,8 +1,5 @@
 import os
-
-from contextlib import asynccontextmanager
 from typing import AsyncGenerator
-
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -20,15 +17,14 @@ session_maker = async_sessionmaker(
 )
 
 
-@asynccontextmanager
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     session: AsyncSession = session_maker()
     try:
         yield session
         await session.commit()
-    except SQLAlchemyError as e:
+    except SQLAlchemyError:
         await session.rollback()
-        raise SQLAlchemyError from e
+        raise
     finally:
         await session.close()
 
