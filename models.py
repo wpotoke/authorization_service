@@ -1,10 +1,12 @@
+from datetime import datetime, timezone
 from sqlalchemy import String, Boolean, DateTime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy.sql.functions import now
 
 
 class Base(DeclarativeBase):
-    created: Mapped[DateTime] = mapped_column(DateTime, default=now)
+    created: Mapped[DateTime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
 
 
 class User(Base):
