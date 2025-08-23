@@ -20,14 +20,6 @@ repos:
         args: [--rcfile=.pylintrc]
   - repo: local
     hooks:
-      - id: quick-test
-        name: quick-test
-        entry: pytest tests/ -x --tb=short -q
-        language: system
-        types: [python]
-        pass_filenames: false
-  - repo: local
-    hooks:
       - id: pytest
         name: pytest
         entry: pytest tests/ -v
