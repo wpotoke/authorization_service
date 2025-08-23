@@ -12,10 +12,14 @@ FastAPI Auth Service - это высокопроизводительный ми�
 ---
 
 #### Endpoints
-  
+
+| REGISTER | LOGIN | ME |
+|----------|-------|----|
+| <img width="1379" height="703" alt="изображение" src="https://github.com/user-attachments/assets/b8513667-7b2b-400f-b2e0-e27e7cffdc2d" /> | <img width="1385" height="703" alt="изображение" src="https://github.com/user-attachments/assets/a63c3524-3299-4d69-9cfb-31f551a37556" /> | <img width="1388" height="737" alt="изображение" src="https://github.com/user-attachments/assets/d14fced5-0460-464b-b466-823c796a118e" /> |
+
   Аутентификация
-    - Регистрация нового пользователя
-    - POST /auth/register
+  - Регистрация нового пользователя
+  - POST /auth/register
   ```
   POST "http://localhost:8000/auth/register" \
     -H "Content-Type: application/json" \
@@ -33,8 +37,8 @@ FastAPI Auth Service - это высокопроизводительный ми�
   }
   ```
   Авторизация
-    - Вход в систему
-    - POST /auth/login
+  - Вход в систему
+  - POST /auth/login
   ```
   curl -X POST "http://localhost:8000/auth/login" \
     -H "Content-Type: application/json" \
@@ -52,8 +56,8 @@ FastAPI Auth Service - это высокопроизводительный ми�
   ```
   
   Управление пользователями
-    - Получение информации о текущем пользователе
-    - GET /auth/me
+  - Получение информации о текущем пользователе
+  - GET /auth/me
   ```
   curl -X GET "http://localhost:8000/auth/me" \
     params {"Token": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}
@@ -116,4 +120,11 @@ CREATE DATABASE your_databasename OWNER your_username ENCODING 'UTF8' LC_COLLATE
 docker-compose up --build
 ```
 
-Приложение будет доступно по адресу: [http://localhost:8000](http://localhost:8000)
+#### Тестирование
+
+```bash
+docker-compose exec web pytest tests/
+```
+после данных действий приложение будет доступно 
+- Health ([дает понять что приложение работает](https://127.0.0.1:8000/))
+- Документация: [http://localhost:8000/docs#](https://127.0.0.1:8000/docs#)
