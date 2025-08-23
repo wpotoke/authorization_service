@@ -6,6 +6,9 @@ services:
     ports:
       - "8000:8000"
     environment:
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+      - REFRESH_TOKEN_EXPIRE_DAYS=${REFRESH_TOKEN_EXPIRE_DAYS}
       - DB_URL=${DB_URL}
       - SECRET_KEY=${SECRET_KEY}
     depends_on:
