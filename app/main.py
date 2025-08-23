@@ -1,8 +1,10 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.database.db import create_db, close_engine
 from app.routes.auth_routes import router as auth_router
 
 
+@asynccontextmanager
 async def lifespan(app: FastAPI):
     # pylint: disable= redefined-outer-name
     await create_db()
