@@ -18,3 +18,20 @@ repos:
         language: system
         types: [python]
         args: [--rcfile=.pylintrc]
+  - repo: local
+    hooks:
+      - id: quick-test
+        name: quick-test
+        entry: pytest tests/ -x --tb=short -q
+        language: system
+        types: [python]
+        pass_filenames: false
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: pytest tests/ -v
+        language: system
+        types: [python]
+        stages: [push]
+        pass_filenames: false
