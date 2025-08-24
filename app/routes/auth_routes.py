@@ -103,9 +103,10 @@ async def login(user_data: schemas.UserLogin, db: AsyncSession = Depends(get_db)
 
 @router.post("/refresh", response_model=schemas.Token)
 async def refresh_token(
-    refresh_token: str = Depends(get_refresh_token), db: AsyncSession = Depends(get_db)
+    incoming_refresh_token: str = Depends(get_refresh_token),
+    db: AsyncSession = Depends(get_db),
 ):
-    payload = verify_token(refresh_token)
+    payload = verify_token(incoming_refresh_token)
 
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -120,11 +121,11 @@ async def refresh_token(
         raise credentials_exception
 
     user = await get_user_by_email(db, email)
-    if not user or user.refresh_token != refresh_token:
+    if not user or user.refresh_token != incoming_refresh_token:
         raise credentials_exception
 
     refresh_token_expires = timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
-    refresh_token = create_refresh_token(
+    new_refresh_token = create_refresh_token(
         data={"sub": email}, expires_delta=refresh_token_expires
     )
 
@@ -133,12 +134,12 @@ async def refresh_token(
         data={"sub": email}, expires_delta=access_token_expires
     )
 
-    user.refresh_token = refresh_token
+    user.refresh_token = new_refresh_token
 
     return {
         "access_token": access_token,
         "token_type": "bearer",
-        "refresh_token": refresh_token,
+        "refresh_token": new_refresh_token,
     }
 
 
