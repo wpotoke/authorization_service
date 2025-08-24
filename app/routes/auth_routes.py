@@ -121,6 +121,7 @@ async def refresh_token(
         raise credentials_exception
 
     user = await get_user_by_email(db, email)
+
     if not user or user.refresh_token != incoming_refresh_token:
         raise credentials_exception
 
