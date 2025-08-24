@@ -17,62 +17,10 @@ FastAPI Auth Service - это высокопроизводительный ми�
 |----------|-------|----|
 | <img width="1379" height="703" alt="изображение" src="https://github.com/user-attachments/assets/b8513667-7b2b-400f-b2e0-e27e7cffdc2d" /> | <img width="1385" height="703" alt="изображение" src="https://github.com/user-attachments/assets/a63c3524-3299-4d69-9cfb-31f551a37556" /> | <img width="1388" height="737" alt="изображение" src="https://github.com/user-attachments/assets/d14fced5-0460-464b-b466-823c796a118e" /> |
 
-  Аутентификация
-  - Регистрация нового пользователя
-  - POST /auth/register
-  ```
-  POST "http://localhost:8000/auth/register" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "email": "user@example.com",
-      "username": "user123",
-      "password": "securepassword123"
-    }'
-  ```
-  Response:
-  ```json
-  {
-    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "token_type": "bearer"
-  }
-  ```
-  Авторизация
-  - Вход в систему
-  - POST /auth/login
-  ```
-  curl -X POST "http://localhost:8000/auth/login" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "email": "user@example.com",
-      "password": "securepassword123"
-    }'
-  ```
-  Response:
-  ```json
-  {
-    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "token_type": "bearer"
-  }
-  ```
-  
-  Управление пользователями
-  - Получение информации о текущем пользователе
-  - GET /auth/me
-  ```
-  curl -X GET "http://localhost:8000/auth/me" \
-    params {"Token": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}
-  ```
-  Response:
-  ``` json
-  {
-    "id": 1,
-    "email": "user@example.com",
-    "username": "user123",
-    "is_active": true,
-    "created": "2025-08-23T17:53:00"
-  }
-  ```
----
+
+| REFRESH | LOGOUT |
+|---------|--------|
+| <img width="1376" height="751" alt="Снимок экрана 2025-08-24 004353" src="https://github.com/user-attachments/assets/0b1e813c-5a1b-497a-86dd-1528362780ad" /> | <img width="1383" height="659" alt="Снимок экрана 2025-08-24 004412" src="https://github.com/user-attachments/assets/568815e1-20c8-4667-b65f-4afb5fd4d301" /> | 
 #### Установка
 
 1. **Клонируйте репозиторий:**
