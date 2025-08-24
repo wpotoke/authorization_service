@@ -21,6 +21,10 @@ async def get_current_user(
     )
 
     email = get_email_from_token(token)
+
+    if not email:
+        raise credentials_exception
+
     token_data = TokenData(email=email)
 
     from app.routes.auth_routes import get_user_by_email
